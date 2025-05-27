@@ -1,0 +1,35 @@
+section .data
+num1 db 5 ; Define un byte con valor 5
+num2 db 11 ; Define un byte con valor 11
+result db 0 ; Variable para almacenar el resultado de la suma
+msg db 'Resultado: ', 0 ; Mensaje a mostrar
+section .bss
+buffer resb 4 ; Reserva 4 bytes para almacenar el resultado en ASCII
+section .text
+global _start
+_start:
+mov al, [num1] ; Carga el valor de num1 (5) en AL
+add al, [num2] ; Suma el valor de num2 (11) al contenido de AL (AL = 16)
+mov [result], al ; Guarda el resultado (16) en la variable result
+; Convertir el resultado numérico a carácter ASCII
+movzx eax, byte [result] ; Extiende con ceros y mueve el byte de result a EAX
+add eax, 48 ; Convierte el número a su equivalente ASCII (16 + 48 = 64,
+'@')
+mov [buffer], al ; Guarda el carácter ASCII en buffer
+; Mostrar el mensaje 'Resultado: '
+mov eax, 4 ; syscall número 4: sys_write
+mov ebx, 1 ; descriptor de archivo 1: salida estándar
+mov ecx, msg ; dirección del mensaje
+mov edx, 11 ; longitud del mensaje
+int 0x80 ; llamada al sistema
+; Mostrar el carácter resultante
+mov eax, 4
+mov ebx, 1
+mov ecx, buffer
+mov edx, 1
+int 0x80
+
+; Salida del programa
+mov eax, 1 ; syscall número 1: sys_exit
+xor ebx, ebx ; código de salida 0
+int 0x80
